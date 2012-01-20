@@ -32,8 +32,8 @@ module RequestResponse
 end
 
 module Encoder
-  def self.new
-    Client.new
+  def self.new(user_id=nil, user_key=nil)
+    Client.new(user_id, user_key)
   end
 
   class Client
