@@ -3,14 +3,14 @@ $:.push File.expand_path("../lib", __FILE__)
 require "encoder/version"
 
 Gem::Specification.new do |s|
-  s.name        = "encoder"
+  s.name        = "encoder-rb"
   s.version     = Encoder::VERSION
   s.authors     = ["Big Bang Technology Inc."]
   s.email       = ["cameron@bigbangtechnology.com"]
   s.homepage    = ""
   s.summary     = %q{Ruby Client Library for Encoding.com}
 
-  s.rubyforge_project = "encoder"
+  s.rubyforge_project = "encoder-rb"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
