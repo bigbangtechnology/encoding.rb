@@ -99,6 +99,65 @@ describe Encoder do
 
   end
 
+  describe "#media_info" do
+    describe "invalid user id or key" do
+      before do
+        fake_error(ErrorMessage::AUTHENTICATION)
+        @result = @sut.cancel_media(1234)
+      end
+      it 'should be nil' do
+        @result.should be_nil
+      end
+      it 'should have "Wrong user id or key" as an error' do
+        @sut.last_error.should =~ /#{ErrorMessage::AUTHENTICATION}/
+      end
+    end
+
+    describe "the server returns a 404 error code" do
+      before do
+        FakeWeb.register_uri(:post, "http://manage.encoding.com/", :body => '', :status => ['404', 'Not Found'])
+        @result = @sut.cancel_media(1234)
+      end
+
+      it 'should return nil' do
+        @result.should be_nil
+      end
+
+      it 'should have "Not Found" as an error' do
+        @sut.last_error.should == 'Not Found'
+      end
+
+    end
+
+    describe "the server returns a 500 error code" do
+      before do
+        FakeWeb.register_uri(:post, "http://manage.encoding.com/", :body => '', :status => ['500', 'Server Error'])
+        @result = @sut.cancel_media(1234)
+      end
+
+      it 'should return nil' do
+        @result.should be_nil
+      end
+
+      it 'should have "Server Error" as an error' do
+        @sut.last_error.should == 'Server Error'
+      end
+
+    end
+
+    describe "return media info" do
+      before do
+        @media_id = 1234
+        FakeWeb.register_uri(:post, 'http://manage.encoding.com/', :body => "<?xml version=\"1.0\"?><response><duration>1.23</message></response></response>")
+        @result = @sut.media_info(@media_id)
+      end
+
+      it 'should return truthy' do
+        @result[:duration].should be 1230
+      end
+    end
+  end
+
   describe "#request_status" do
     describe "invalid user id or key" do
       before do
