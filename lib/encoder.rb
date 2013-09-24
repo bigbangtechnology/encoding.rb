@@ -9,6 +9,7 @@ require 'encoder/version'
 module EncodingActions
   ADD_MEDIA = "AddMedia"
   GET_STATUS = "GetStatus"
+  GET_MEDIA_INFO = "GetMediaInfo"
   CANCEL_MEDIA = "CancelMedia"
 end
 
@@ -69,6 +70,30 @@ module Encoder
       return RequestResponse::ERROR if api_error?(document)
 
       document.css("MediaID").text.to_i
+    end
+
+    def media_info(media_id)
+      xml = Builder::XmlMarkup.new :indent=>2
+      xml.instruct!
+      xml.query do |q|
+        q.userid    @user_id
+        q.userkey   @user_key
+        q.action    EncodingActions::GET_MEDIA_INFO
+        q.mediaid   media_id
+      end
+
+      response = request_send(xml.target!)
+      return RequestResponse::ERROR if request_error?(response)
+
+      document = Nokogiri::XML(response.body)
+      puts document
+      return RequestResponse::ERROR if api_error?(document)
+
+      duration   = (document.css("response > duration").text.to_f * 1000).to_i
+
+      info = {
+        duration: duration
+      }
     end
 
     def request_status(media_id)
